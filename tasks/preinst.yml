@@ -1,0 +1,18 @@
+---
+
+- name: install dependencies
+  apt:
+    state: latest
+    update_cache: yes
+    install_recommends: no
+    name: 
+      - apt-transport-https
+      - dirmngr
+      - gpg
+      - gpg-agent
+      - npm
+
+- name: download pulsar editor deb package
+  get_url:
+    url: https://web.pulsar-edit.dev/download?os=linux&type=linux_deb
+    dest: /tmp/pulsar.deb

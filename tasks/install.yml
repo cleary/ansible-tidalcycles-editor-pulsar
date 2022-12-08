@@ -1,0 +1,4 @@
+---
+- name: install pulsar editor
+  apt:
+    deb: /tmp/pulsar.deb

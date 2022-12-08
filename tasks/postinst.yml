@@ -1,0 +1,58 @@
+---
+
+- block:
+  - name: get installed plugin version (if it exists)
+    shell: /opt/Pulsar/resources/app/ppm/bin/apm list -i | grep tidalcycles | awk -F@ '{print $NF}'
+    register: piver
+    changed_when: false
+  
+  - name: get latest plugin version tag from the repo
+    shell: git ls-remote https://github.com/tidalcycles/atom-tidalcycles.git | grep tags | awk '{print $NF}' | sort -V | grep -v "\^{}$" | tail -n1 | awk -F/v '{print $NF}'
+    register: pgver
+    changed_when: false
+
+  become: yes
+  become_method: su
+  become_user: "{{ansible_env.SUDO_USER}}"
+  become_flags: '-s /bin/bash'
+
+- block:
+  - name: download pulsar/atom tidalcycles plugin
+    get_url:
+      url: "https://github.com/tidalcycles/atom-tidalcycles/archive/refs/tags/v{{ pgver }}.tar.gz"
+      dest: /tmp/atom-tidalcycles-plugin.tar.gz
+
+  - name: download the tidalcycles pulsar/atom plugin
+    unarchive:
+      src: /tmp/atom-tidalcycles-plugin.tar.gz
+      dest: "/home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles"
+      creates: "/home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles"
+
+  - name: npm install the plugin (until package manager support is added)
+    shell: 
+      cmd: npm install
+      chdir: "/home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles"
+
+  - name: create/replace pulsar config ~/.pulsar/config.cson (taking a backup)
+    template:
+      src: templates/config.cson.template
+      dest: "/home/{{ansible_env.SUDO_USER}}/.pulsar/config.cson"
+      mode: 0640
+      backup: yes
+    tags:
+    - config
+
+  become: yes
+  become_method: su
+  become_user: "{{ansible_env.SUDO_USER}}"
+  become_flags: '-s /bin/bash'
+  when: (piver is not defined) or
+        (piver < pgver)
+
+- include_role:
+    name: "roles/ugens-{{ item }}"
+  vars:
+    editor: "{{ pulsar.editor }}"
+  with_items: "{{ sc_ugens }}"
+  when: sc_ugens is defined
+
