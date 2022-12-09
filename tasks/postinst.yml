@@ -22,7 +22,7 @@
       url: "https://github.com/tidalcycles/atom-tidalcycles/archive/refs/tags/v{{ pgver }}.tar.gz"
       dest: /tmp/atom-tidalcycles-plugin.tar.gz
 
-  - name: download the tidalcycles pulsar/atom plugin
+  - name: unpack the tidalcycles pulsar/atom plugin
     unarchive:
       src: /tmp/atom-tidalcycles-plugin.tar.gz
       dest: "/home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles"
