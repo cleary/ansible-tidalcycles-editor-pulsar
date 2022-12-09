@@ -19,14 +19,19 @@
 - block:
   - name: download pulsar/atom tidalcycles plugin
     get_url:
-      url: "https://github.com/tidalcycles/atom-tidalcycles/archive/refs/tags/v{{ pgver }}.tar.gz"
+      url: "https://github.com/tidalcycles/atom-tidalcycles/archive/refs/tags/v{{ pgver.stdout }}.tar.gz"
       dest: /tmp/atom-tidalcycles-plugin.tar.gz
+
+  - name: create required package plugin directory
+    file:
+      path: "/home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles"
+      state: directory
+      mode: 0755
 
   - name: unpack the tidalcycles pulsar/atom plugin
     unarchive:
       src: /tmp/atom-tidalcycles-plugin.tar.gz
       dest: "/home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles"
-      creates: "/home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles"
 
   - name: npm install the plugin (until package manager support is added)
     shell: 
@@ -47,7 +52,7 @@
   become_user: "{{ansible_env.SUDO_USER}}"
   become_flags: '-s /bin/bash'
   when: (piver is not defined) or
-        (piver < pgver)
+        (piver.stdout < pgver.stdout)
 
 - include_role:
     name: "roles/ugens-{{ item }}"
