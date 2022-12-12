@@ -2,14 +2,18 @@
 
 - block:
   - name: get installed plugin version (if it exists)
-    shell: /opt/Pulsar/resources/app/ppm/bin/apm list -i | grep tidalcycles | awk -F@ '{print $NF}'
+    shell: /opt/Pulsar/resources/app/ppm/bin/apm list -i | grep tidalcycles | awk -F@ '{print $NF}' | grep -v tidalcycles
     register: piver
     changed_when: false
+    failed_when: false
   
   - name: get latest plugin version tag from the repo
     shell: git ls-remote https://github.com/tidalcycles/atom-tidalcycles.git | grep tags | awk '{print $NF}' | sort -V | grep -v "\^{}$" | tail -n1 | awk -F/v '{print $NF}'
     register: pgver
     changed_when: false
+
+  - debug:
+      msg: "piver: {{ piver }} - pgver: {{ pgver }}"
 
   become: yes
   become_method: su
@@ -31,7 +35,20 @@
   - name: unpack the tidalcycles pulsar/atom plugin
     unarchive:
       src: /tmp/atom-tidalcycles-plugin.tar.gz
-      dest: "/home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles"
+      dest: "/tmp/"
+
+  - name: Remove old version
+    file:
+      path: "/home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles"
+      state: absent
+
+  - name: Copy plugin into place
+    shell: "mv /tmp/atom-tidalcycles*/ /home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles" 
+
+  - name: Remove archive extraction folder
+    file:
+      path: "{{ lookup('ansible.builtin.fileglob', '/tmp/atom-tidalcycles*') }}"
+      state: absent
 
   - name: npm install the plugin (until package manager support is added)
     shell: 
