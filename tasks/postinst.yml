@@ -45,11 +45,6 @@
   - name: Copy plugin into place
     shell: "mv /tmp/atom-tidalcycles*/ /home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles" 
 
-  - name: Remove archive extraction folder
-    file:
-      path: "{{ lookup('ansible.builtin.fileglob', '/tmp/atom-tidalcycles*') }}"
-      state: absent
-
   - name: npm install the plugin (until package manager support is added)
     shell: 
       cmd: npm install
