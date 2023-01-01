@@ -11,21 +11,6 @@
       - gpg
       - gpg-agent
 
-- name: check if we have a manual npm install
-  stat:
-    path:  "/usr/local/bin/npm"
-  register: npmbin
-  changed_when: false
-
-- name: install npm (if required)
-  apt:
-    state: latest
-    update_cache: yes
-    install_recommends: no
-    name:
-      - npm
-  when: not npmbin.stat.exists
-
 - name: download pulsar editor deb package
   get_url:
     url: https://web.pulsar-edit.dev/download?os=linux&type=linux_deb
