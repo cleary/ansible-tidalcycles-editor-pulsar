@@ -1,5 +1,5 @@
 ---
-- block
+- block:
   - name: get installed pulsar version (if it exists)
     shell: dpkg -l pulsar | grep ^ii | awk '{print $3}'
     register: puliver
