@@ -1,26 +1,4 @@
 ---
-- block:
-  - name: get installed pulsar version (if it exists)
-    shell: dpkg -l pulsar | grep ^ii | awk '{print $3}'
-    register: puliver
-    changed_when: false
-    failed_when: false
-
-  - name: get latest pulsar version tag from the repo
-    shell: git ls-remote https://github.com/pulsar-edit/pulsar.git | grep tags | awk '{print $NF}' | sort -V | grep -v "\^{}$" | tail -n1 | awk -F/v '{print $NF}'
-    register: pulgver
-    changed_when: false
-
-  become: yes
-  become_method: su
-  become_user: "{{ansible_env.SUDO_USER}}"
-  become_flags: '-s /bin/bash'
-
-- name: download latest pulsar editor deb package
-  get_url:
-    url: https://download.pulsar-edit.dev/?os=linux&type=linux_deb
-    dest: /tmp/pulsar.deb
-
 - name: install latest pulsar editor
   apt:
     deb: /tmp/pulsar.deb

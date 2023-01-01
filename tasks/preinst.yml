@@ -10,3 +10,8 @@
       - dirmngr
       - gpg
       - gpg-agent
+
+- name: download latest pulsar editor deb package
+  get_url:
+    url: https://download.pulsar-edit.dev/?os=linux&type=linux_deb
+    dest: /tmp/pulsar.deb
