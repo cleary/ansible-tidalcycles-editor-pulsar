@@ -16,15 +16,12 @@
   become_user: "{{ansible_env.SUDO_USER}}"
   become_flags: '-s /bin/bash'
 
-- block:
-  - name: download latest pulsar editor deb package
-    get_url:
-      url: https://github.com/pulsar-edit/pulsar/releases/download/v{{ pulgver.stdout }}/Linux.pulsar_{{ pulgver.stdout }}_amd64.deb
-      dest: /tmp/pulsar.deb
+- name: download latest pulsar editor deb package
+  get_url:
+    url: https://download.pulsar-edit.dev/?os=linux&type=linux_deb
+    dest: /tmp/pulsar.deb
 
-  - name: install latest pulsar editor
-    apt:
-      deb: /tmp/pulsar.deb
+- name: install latest pulsar editor
+  apt:
+    deb: /tmp/pulsar.deb
 
-  when: (puliver is not defined) or
-        (puliver.stdout < pulgver.stdout)
