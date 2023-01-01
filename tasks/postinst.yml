@@ -12,43 +12,14 @@
     register: pgver
     changed_when: false
 
-  - debug:
-      msg: "piver: {{ piver }} - pgver: {{ pgver }}"
-
   become: yes
   become_method: su
   become_user: "{{ansible_env.SUDO_USER}}"
   become_flags: '-s /bin/bash'
 
 - block:
-  - name: download pulsar/atom tidalcycles plugin
-    get_url:
-      url: "https://github.com/tidalcycles/atom-tidalcycles/archive/refs/tags/v{{ pgver.stdout }}.tar.gz"
-      dest: /tmp/atom-tidalcycles-plugin.tar.gz
-
-  - name: create required package plugin directory
-    file:
-      path: "/home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles"
-      state: directory
-      mode: 0755
-
-  - name: unpack the tidalcycles pulsar/atom plugin
-    unarchive:
-      src: /tmp/atom-tidalcycles-plugin.tar.gz
-      dest: "/tmp/"
-
-  - name: Remove old version
-    file:
-      path: "/home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles"
-      state: absent
-
-  - name: Copy plugin into place
-    shell: "mv /tmp/atom-tidalcycles*/ /home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles" 
-
-  - name: npm install the plugin (until package manager support is added)
-    shell: 
-      cmd: npm install
-      chdir: "/home/{{ansible_env.SUDO_USER}}/.pulsar/packages/tidalcycles"
+  - name: install pulsar/atom tidalcycles plugin
+    shell: /opt/Pulsar/resources/app/ppm/bin/apm install tidalcycles
 
   - name: create/replace pulsar config ~/.pulsar/config.cson (taking a backup)
     template:
