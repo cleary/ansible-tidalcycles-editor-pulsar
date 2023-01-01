@@ -19,7 +19,7 @@
 - block:
   - name: download latest pulsar editor deb package
     get_url:
-      url: https://github.com/pulsar-edit/pulsar/releases/download/{{ pulgver.stdout }}/Linux.pulsar_{{ pulgver.stdout }}_amd64.deb
+      url: https://github.com/pulsar-edit/pulsar/releases/download/v{{ pulgver.stdout }}/Linux.pulsar_{{ pulgver.stdout }}_amd64.deb
       dest: /tmp/pulsar.deb
 
   - name: install latest pulsar editor
