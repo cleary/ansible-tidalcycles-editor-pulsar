@@ -8,7 +8,7 @@
     failed_when: false
   
   - name: get latest plugin version tag from the repo
-    shell: git ls-remote https://github.com/tidalcycles/atom-tidalcycles.git | grep tags | awk '{print $NF}' | sort -V | grep -v "\^{}$" | tail -n1 | awk -F/v '{print $NF}'
+    shell: git ls-remote https://github.com/tidalcycles/pulsar-tidalcycles.git | grep tags | awk '{print $NF}' | sort -V | grep -v "\^{}$" | tail -n1 | awk -F/v '{print $NF}'
     register: pgver
     changed_when: false
 
@@ -18,7 +18,7 @@
   become_flags: '-s /bin/bash'
 
 - block:
-  - name: install pulsar/atom tidalcycles plugin
+  - name: install pulsar tidalcycles plugin
     shell: /opt/Pulsar/resources/app/ppm/bin/apm install tidalcycles
 
   - name: create/replace pulsar config ~/.pulsar/config.cson (taking a backup)
